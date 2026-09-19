@@ -7,6 +7,9 @@ Port of the PocketMine-MP plugin [PersianChatFixer](https://github.com/TheFaRHaN
 - Does the same for signs, wrapping lines longer than 14 chars (max 4 lines).
 - Preserves color codes (`§`), leading symbols like `><[]`, brackets `()[]{}<>`, Latin words, and numbers.
 
+## Folia
+Runs on both **Paper** and **Folia** (`folia-supported: true` in `plugin.yml`). Both listeners only rewrite the event they receive: `AsyncChatEvent` runs on the chat thread and `SignChangeEvent` on the sign's region thread. The text engine is stateless, so no scheduler is needed and the same jar works on both.
+
 ## Build
 GitHub Actions builds it automatically (`.github/workflows/build.yml`) — artifact `PersianChatFixer` contains the jar.
 
