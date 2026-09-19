@@ -1,40 +1,70 @@
-# PersianChatFixer — Paper Port
+# PersianChatFixer
 
-Port of the PocketMine-MP plugin [PersianChatFixer](https://github.com/TheFaRHaNiR/PersianChatFixer) (v3.1.1) to **Paper** (latest, `26.2.build.121-stable`, api-version `26.2`, Java 25).
+[![Build](https://github.com/TheFaRHaNiR/PersianChatFixer-Paper/actions/workflows/build.yml/badge.svg)](https://github.com/TheFaRHaNiR/PersianChatFixer-Paper/actions/workflows/build.yml)
+![Paper](https://img.shields.io/badge/Paper-26.2-blue)
+![Folia](https://img.shields.io/badge/Folia-supported-brightgreen)
+![Java](https://img.shields.io/badge/Java-25-orange)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-## What it does
-- Fixes Persian/Arabic text in chat: applies correct contextual letter shaping (isolated/initial/medial/final forms, including the لا ligature) and reverses the text so it renders correctly in the Minecraft client.
-- Does the same for signs, wrapping lines longer than 14 chars (max 4 lines).
-- Preserves color codes (`§`), leading symbols like `><[]`, brackets `()[]{}<>`, Latin words, and numbers.
+The Minecraft client doesn't handle right-to-left text. Persian and Arabic show up with the letters disconnected and in reverse order. PersianChatFixer fixes chat messages and signs on the server, so every player sees them correctly with no client mod.
 
-## Folia
-Runs on both **Paper** and **Folia** (`folia-supported: true` in `plugin.yml`). Both listeners only rewrite the event they receive: `AsyncChatEvent` runs on the chat thread and `SignChangeEvent` on the sign's region thread. The text engine is stateless, so no scheduler is needed and the same jar works on both.
+This is a Paper/Folia port of the PocketMine-MP plugin [PersianChatFixer](https://github.com/TheFaRHaNiR/PersianChatFixer).
 
-## Build
-GitHub Actions builds it automatically (`.github/workflows/build.yml`) — artifact `PersianChatFixer` contains the jar.
+## Features
 
-To build locally instead (requires JDK 25 + Maven):
+- **Chat:** reshapes Persian and Arabic letters (isolated, initial, medial and final forms, including the `لا` ligature) and reverses the text so it displays correctly.
+- **Signs:** fixes the same text on signs. Lines longer than 14 characters wrap automatically, up to 4 lines.
+- **Keeps your formatting:** leaves `§` color codes, Latin words, numbers, brackets `() [] {} <>` and leading symbols such as `>` or `[` as they are.
+- **No setup:** there are no commands, config or permissions. Drop the jar in and it works.
+- **Folia-ready:** one jar runs on both Paper and Folia.
 
+## Requirements
+
+| | Version |
+|---|---|
+| Server | Paper or Folia **26.2+** |
+| Java | **25+** |
+
+## Installation
+
+1. Download the latest jar from [Releases](https://github.com/TheFaRHaNiR/PersianChatFixer-Paper/releases). You can also get it from the artifacts of the latest successful [Build](https://github.com/TheFaRHaNiR/PersianChatFixer-Paper/actions/workflows/build.yml) run.
+2. Put it in your server's `plugins/` folder.
+3. Restart the server.
+
+## Folia support
+
+`plugin.yml` sets `folia-supported: true`. The plugin is safe on Folia's regionized threading for these reasons:
+
+- Each listener only changes the event it receives. `AsyncChatEvent` runs on the chat thread and `SignChangeEvent` runs on the region thread that owns the sign.
+- The text engine is stateless. Its glyph tables are built once when the class loads and are only read after that.
+- It doesn't use the scheduler, doesn't touch the world and doesn't share any mutable state.
+
+## Building from source
+
+You need JDK 25 and Maven:
+
+```bash
+git clone https://github.com/TheFaRHaNiR/PersianChatFixer-Paper.git
+cd PersianChatFixer-Paper
+mvn -B package
 ```
-mvn -B package --file PersianChatFixer-Paper/pom.xml
-```
 
-Jar lands in `PersianChatFixer-Paper/target/`. Drop it into `plugins/`.
+The jar is written to `target/PersianChatFixer-<version>.jar`.
+
+### CI
+
+[GitHub Actions](.github/workflows/build.yml) builds the plugin on every push and pull request and uploads the jar as a build artifact. When you push a tag that starts with `v` (for example `v3.1.1`), it also creates a GitHub Release with the jar attached.
 
 ## Project layout
+
 ```
-PersianChatFixer-Paper/
-├── pom.xml
-└── src/main/
-    ├── java/TheFaRHaNiR/PersianChatFixer/
-    │   ├── Main.java              # Chat + sign listeners (was Main.php)
-    │   └── PersianTextEngine.java # Shaping + RTL engine (was PersianTextEngine.php)
-    └── resources/plugin.yml
+src/main/
+├── java/TheFaRHaNiR/PersianChatFixer/
+│   ├── Main.java               # Chat and sign listeners
+│   └── PersianTextEngine.java  # Letter shaping and RTL reordering
+└── resources/plugin.yml
 ```
 
-## Notes on the port
-- Original: MIT License © 2025 TheFaRHaNiR.
-- PHP `mb_str_split`/glyph logic ported 1:1, using the same glyph tables and the same `[isolated, initial, medial, final]` ordering.
-- PocketMine `PlayerChatEvent` → Paper `AsyncChatEvent` (message round-tripped through the legacy `§` serializer so the engine handles colors exactly like PHP).
-- PocketMine `SignChangeEvent` → Bukkit `SignChangeEvent` (Component `line(i, …)` API; lines >14 code points wrapped, first 4 kept, rest cleared — same as the PHP `SignText` behavior).
-- Latin-phrase merging across spaces and bracket-token handling replicate the PHP behavior exactly.
+## License
+
+[MIT](LICENSE) © 2025 [TheFaRHaNiR](https://github.com/TheFaRHaNiR)
