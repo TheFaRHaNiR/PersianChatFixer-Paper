@@ -1,7 +1,7 @@
 # PersianChatFixer
 
 [![Build](https://github.com/TheFaRHaNiR/PersianChatFixer-Paper/actions/workflows/build.yml/badge.svg)](https://github.com/TheFaRHaNiR/PersianChatFixer-Paper/actions/workflows/build.yml)
-![Paper](https://img.shields.io/badge/Paper-26.2-blue)
+![Paper](https://img.shields.io/badge/Paper-26.1.2%2B-blue)
 ![Folia](https://img.shields.io/badge/Folia-supported-brightgreen)
 ![Java](https://img.shields.io/badge/Java-25-orange)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -22,7 +22,7 @@ This is a Paper/Folia port of the PocketMine-MP plugin [PersianChatFixer](https:
 
 | | Version |
 |---|---|
-| Server | Paper or Folia **26.2+** |
+| Server | Paper or Folia **26.1.2+** |
 | Java | **25+** |
 
 ## Installation
