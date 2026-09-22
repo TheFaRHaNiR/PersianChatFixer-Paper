@@ -12,7 +12,6 @@
 
 package TheFaRHaNiR.PersianChatFixer;
 
-import io.papermc.paper.event.player.AsyncChatEvent;
 import java.util.ArrayList;
 import java.util.List;
 import net.kyori.adventure.text.Component;
@@ -21,6 +20,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Main extends JavaPlugin implements Listener {
@@ -34,14 +34,17 @@ public final class Main extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(this, this);
     }
 
-    @EventHandler(priority = EventPriority.LOW)
-    public void onPlayerChat(AsyncChatEvent event) {
-        String message = LEGACY.serialize(event.message());
+    // Paper fires the legacy chat event before AsyncChatEvent and builds the modern
+    // message from it, so fixing the text here, at LOWEST, reaches every chat plugin:
+    // ones that cancel and re-broadcast on the legacy event, and ones on AsyncChatEvent.
+    @SuppressWarnings("deprecation")
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerChat(AsyncPlayerChatEvent event) {
+        String message = event.getMessage();
         String processed = PersianTextEngine.process(message);
-        if (processed.equals(message)) {
-            return;
+        if (!processed.equals(message)) {
+            event.setMessage(processed);
         }
-        event.message(LEGACY.deserialize(processed));
     }
 
     @EventHandler(priority = EventPriority.LOW)
